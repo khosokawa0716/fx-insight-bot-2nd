@@ -1,0 +1,62 @@
+[
+  {
+    "name": "symbol",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "取引通貨シンボル（例: BTC）"
+  },
+  {
+    "name": "minute",
+    "type": "TIMESTAMP",
+    "mode": "REQUIRED",
+    "description": "1分足の開始時刻（JST）。パーティションキー"
+  },
+  {
+    "name": "open",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "始値（円）"
+  },
+  {
+    "name": "high",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "高値（円）"
+  },
+  {
+    "name": "low",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "安値（円）"
+  },
+  {
+    "name": "close",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "終値（円）"
+  },
+  {
+    "name": "volume",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "合計出来高（BTC単位）"
+  },
+  {
+    "name": "vwap",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "出来高加重平均価格（円）"
+  },
+  {
+    "name": "imbalance",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "買い注文比率（0.0〜1.0）。0.5より大きいほど買い優勢"
+  },
+  {
+    "name": "shannon_entropy",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "約定数量ベースのシャノン・エントロピー。大口アルゴリズムの活動度を示す独自指標"
+  }
+]
