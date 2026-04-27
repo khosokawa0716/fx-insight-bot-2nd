@@ -39,17 +39,20 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
         volume=("size", "sum"),
     )
 
+    valid_sizes = df[df["size"] > 0].copy()
+
     # VWAP
-    vwap_num = df.groupby("minute")["value"].sum()
-    vwap_den = df.groupby("minute")["size"].sum()
-    ohlcv["vwap"] = vwap_num / vwap_den
+    vwap_num = valid_sizes.groupby("minute")["value"].sum()
+    vwap_den = valid_sizes.groupby("minute")["size"].sum().replace(0, np.nan)
+    ohlcv["vwap"] = vwap_num.div(vwap_den)
 
     # Imbalance: buy volume ratio
-    buy_vol = df[df["side"] == "BUY"].groupby("minute")["size"].sum()
-    ohlcv["imbalance"] = (buy_vol / vwap_den).fillna(0.0)
+    buy_vol = valid_sizes[valid_sizes["side"] == "BUY"].groupby("minute")["size"].sum()
+    ohlcv["imbalance"] = buy_vol.div(vwap_den).reindex(ohlcv.index).fillna(0.0)
 
     # Shannon entropy of trade sizes per bar
-    ohlcv["entropy"] = df.groupby("minute")["size"].apply(shannon_entropy)
+    entropy = valid_sizes.groupby("minute")["size"].apply(shannon_entropy)
+    ohlcv["entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
 
     return ohlcv.reset_index()
 
