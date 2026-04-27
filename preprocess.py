@@ -59,7 +59,8 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     input_path = sys.argv[1] if len(sys.argv) > 1 else "sample/20251201_BTC.csv"
-    output_path = Path(input_path).stem + "_features.csv"
+    input_file = Path(input_path)
+    output_path = input_file.with_name(f"{input_file.stem}_features.csv")
 
     ticks = load_ticks(input_path)
     print(f"Loaded {len(ticks):,} ticks from {input_path}")
