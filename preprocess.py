@@ -7,7 +7,7 @@ and computes VWAP, Imbalance, and Shannon Entropy per bar.
 
 import numpy as np
 import pandas as pd
-import sys
+import argparse
 from pathlib import Path
 
 
@@ -17,29 +17,19 @@ def load_ticks(filepath: str) -> pd.DataFrame:
     return df
 
 
-def shannon_entropy(sizes: pd.Series) -> float:
-    total = sizes.sum()
-    if total == 0 or len(sizes) < 2:
-        return 0.0
-    probs = sizes / total
-    probs = probs[probs > 0]
-    return float(-np.sum(probs * np.log2(probs)))
-
-
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["minute"] = df["timestamp"].dt.floor("1min")
     df["value"] = df["price"] * df["size"]
+    valid_sizes = df[df["size"] > 0].copy()
 
-    ohlcv = df.groupby("minute").agg(
+    ohlcv = valid_sizes.groupby("minute").agg(
         open=("price", "first"),
         high=("price", "max"),
         low=("price", "min"),
         close=("price", "last"),
         volume=("size", "sum"),
     )
-
-    valid_sizes = df[df["size"] > 0].copy()
 
     # VWAP
     vwap_num = valid_sizes.groupby("minute")["value"].sum()
@@ -51,19 +41,30 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     ohlcv["imbalance"] = buy_vol.div(vwap_den).reindex(ohlcv.index).fillna(0.0)
 
     # Shannon entropy of trade sizes per bar
-    entropy = valid_sizes.groupby("minute")["size"].apply(shannon_entropy)
+    minute_size_total = valid_sizes.groupby("minute")["size"].transform("sum")
+    probs = valid_sizes["size"].div(minute_size_total)
+    entropy_terms = -(probs * np.log2(probs))
+    entropy = entropy_terms.groupby(valid_sizes["minute"]).sum()
+    minute_counts = valid_sizes.groupby("minute")["size"].size()
+    entropy = entropy.where(minute_counts >= 2, 0.0)
     ohlcv["entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
 
     return ohlcv.reset_index()
 
 
 def main():
-    input_path = sys.argv[1] if len(sys.argv) > 1 else "sample/20251201_BTC.csv"
-    input_file = Path(input_path)
-    output_path = input_file.with_name(f"{input_file.stem}_features.csv")
+    parser = argparse.ArgumentParser(description="Tick data preprocessor")
+    parser.add_argument("--input", default="sample/20251201_BTC.csv", help="入力CSVのパス")
+    parser.add_argument("--output", default=None, help="出力CSVのパス（省略時は自動生成）")
+    args = parser.parse_args()
 
-    ticks = load_ticks(input_path)
-    print(f"Loaded {len(ticks):,} ticks from {input_path}")
+    input_file = Path(args.input)
+    if not input_file.exists():
+        parser.error(f"ファイルが見つかりません: {input_file}")
+    output_path = Path(args.output) if args.output else input_file.with_name(f"{input_file.stem}_features.csv")
+
+    ticks = load_ticks(str(input_file))
+    print(f"Loaded {len(ticks):,} ticks from {input_file}")
 
     features = build_features(ticks)
     print(f"Generated {len(features):,} 1-minute bars")
