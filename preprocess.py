@@ -19,6 +19,8 @@ def load_ticks(filepath: str) -> pd.DataFrame:
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
+    # open/close の正確性を保証するため timestamp 昇順に並べる
+    df = df.sort_values("timestamp")
     df["minute"] = df["timestamp"].dt.floor("1min")
     df["value"] = df["price"] * df["size"]
     valid_sizes = df[df["size"] > 0].copy()
