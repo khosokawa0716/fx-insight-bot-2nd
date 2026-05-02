@@ -13,14 +13,14 @@ from pathlib import Path
 
 def load_ticks(filepath: str) -> pd.DataFrame:
     df = pd.read_csv(filepath, parse_dates=["timestamp"])
-    df = df.sort_values("timestamp").reset_index(drop=True)
+    df = df.sort_values("timestamp", kind="mergesort").reset_index(drop=True)
     return df
 
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    # open/close の正確性を保証するため timestamp 昇順に並べる
-    df = df.sort_values("timestamp")
+    # open/close の正確性を保証するため、同一 timestamp の元順序を保って並べる
+    df = df.sort_values("timestamp", kind="mergesort")
     df["minute"] = df["timestamp"].dt.floor("1min")
     df["value"] = df["price"] * df["size"]
     valid_sizes = df[df["size"] > 0].copy()
