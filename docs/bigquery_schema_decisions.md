@@ -48,9 +48,9 @@ TIMESTAMP型はBigQuery内部でUTCに変換して保存するため、「JST �
 
 **決定: raw_ticks は INTEGER型、features_1min の価格列は FLOAT64型**
 
-raw_ticks の price はGMOコインのBTC/JPY価格であり常に整数（例: `14305210`）のため INTEGER を採用。
+raw_ticks の price は値としては整数価格で扱うため INTEGER を採用する。ただし、実際のCSVは `14305210.000` のような小数点付き表記になっているため、そのままBigQueryへCSVロードすると INT64 に変換できず失敗する。したがって、raw_ticks にロードする前に `14305210.000` → `14305210` のように整数表記へ正規化することを前提運用とする。
 
-features_1min の open/high/low/close は将来ETH等の小数価格を持つ通貨にも対応できるよう FLOAT64 を採用。INTEGER と FLOAT64 はどちらも8バイトでストレージコストは同じ。BTC/JPY の価格は8桁程度であり FLOAT64 の有効桁数（約15桁）に十分収まるため精度上の問題はない。
+features_1min の open/high/low/close は、将来ETH等の小数価格を持つ通貨にも対応できるよう FLOAT64 を採用する。また、CSVの小数点付き表記をそのまま扱きたい用途では FLOAT64 の方がロードしやすい。INTEGER と FLOAT64 はどちらも8バイトでストレージコストは同じであり、BTC/JPY の価格は8桁程度なので FLOAT64 の有効桁数（約15桁）でも実用上の精度問題はない。
 
 ---
 
