@@ -19,9 +19,9 @@
   },
   {
     "name": "price",
-    "type": "INTEGER",
+    "type": "FLOAT64",
     "mode": "REQUIRED",
-    "description": "約定価格（円単位）。CSVは小数点付き表記（例: 14305210.000）だがBigQueryのINTEGERとして正しくロードされる"
+    "description": "約定価格（円単位）。CSVの小数点付き表記（例: 14305210.000）をそのままBigQueryにロードできるようFLOAT64で保持する"
   },
   {
     "name": "timestamp",
