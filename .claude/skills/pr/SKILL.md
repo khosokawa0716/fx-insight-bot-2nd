@@ -6,7 +6,8 @@ description: PRを作成する
 
 1. 次のコマンドを並列で実行する：
    - `git status` で未追跡ファイルを確認（`-uall` フラグは使わない）
-   - `git diff` でステージ済み・未ステージの差分を確認
+   - `git diff` で未ステージの差分を確認
+   - `git diff --staged` でステージ済みの差分を確認
    - `git log --oneline main..HEAD` でこのブランチのコミット一覧を確認
    - `git diff main...HEAD` でmainからの全差分を確認
    - リモートブランチの追跡状況を確認：`git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "no upstream"`
