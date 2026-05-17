@@ -46,11 +46,11 @@ TIMESTAMP型はBigQuery内部でUTCに変換して保存するため、「JST �
 
 ## Q5. price（価格）の数値型は何にするか？
 
-**決定: raw_ticks は INTEGER型、features_1min の価格列は FLOAT64型**
+**決定: 全テーブルの価格列を FLOAT64型 で統一する**
 
-raw_ticks の price は値としては整数価格で扱うため INTEGER を採用する。ただし、実際のCSVは `14305210.000` のような小数点付き表記になっているため、そのままBigQueryへCSVロードすると INT64 に変換できず失敗する。したがって、raw_ticks にロードする前に `14305210.000` → `14305210` のように整数表記へ正規化することを前提運用とする。
+GMOコインのCSVは価格を `14305210.000` のような小数点付き表記で出力する。BigQueryのCSVロードはこの形式を INT64 にパースできず失敗するため、INTEGER は採用しない。
 
-features_1min の open/high/low/close は、将来ETH等の小数価格を持つ通貨にも対応できるよう FLOAT64 を採用する。また、CSVの小数点付き表記をそのまま扱きたい用途では FLOAT64 の方がロードしやすい。INTEGER と FLOAT64 はどちらも8バイトでストレージコストは同じであり、BTC/JPY の価格は8桁程度なので FLOAT64 の有効桁数（約15桁）でも実用上の精度問題はない。
+FLOAT64 を採用することでロード前の変換処理が不要になる。INTEGER と FLOAT64 はどちらも8バイトでストレージコストは同じ。BTC/JPY の価格は8桁程度であり FLOAT64 の有効桁数（約15桁）に十分収まるため精度上の問題はない。将来ETH等の小数価格を持つ通貨にも対応できる。
 
 ---
 
@@ -70,7 +70,7 @@ features_1min の open/high/low/close は、将来ETH等の小数価格を持つ
 | trade_logの更新方式 | UPDATE（1注文=1行） |
 | モデルバージョンの記録 | する（`model_version`列） |
 | タイムゾーン | JST統一 |
-| 価格の型 | raw_ticks: INTEGER、features_1min: FLOAT64 |
+| 価格の型 | FLOAT64（全テーブル統一） |
 | symbolの管理 | 全テーブルに列を持つ |
 
 ---
