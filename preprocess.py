@@ -18,6 +18,8 @@ def load_ticks(filepath: str) -> pd.DataFrame:
 
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return df
     df = df.copy()
     # open/close の正確性を保証するため、同一 timestamp の元順序を保って並べる
     df = df.sort_values("timestamp", kind="mergesort")
