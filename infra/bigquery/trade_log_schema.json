@@ -13,7 +13,7 @@
   },
   {
     "name": "signal_time",
-    "type": "TIMESTAMP",
+    "type": "DATETIME",
     "mode": "REQUIRED",
     "description": "1次シグナル発生時刻（JST）。パーティションキー"
   },
@@ -55,7 +55,7 @@
   },
   {
     "name": "exit_time",
-    "type": "TIMESTAMP",
+    "type": "DATETIME",
     "mode": "NULLABLE",
     "description": "決済時刻（JST）。未決済中はNULL"
   },

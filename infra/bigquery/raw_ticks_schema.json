@@ -25,7 +25,7 @@
   },
   {
     "name": "timestamp",
-    "type": "TIMESTAMP",
+    "type": "DATETIME",
     "mode": "REQUIRED",
     "description": "約定日時（JST）"
   }

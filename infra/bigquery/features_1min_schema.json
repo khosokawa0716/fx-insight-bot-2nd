@@ -7,7 +7,7 @@
   },
   {
     "name": "minute",
-    "type": "TIMESTAMP",
+    "type": "DATETIME",
     "mode": "REQUIRED",
     "description": "1分足の開始時刻（JST）。パーティションキー"
   },

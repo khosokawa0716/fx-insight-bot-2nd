@@ -2,6 +2,8 @@
 # BigQueryテーブル作成スクリプト
 # 実行前に PROJECT_ID と DATASET_ID を実際の値に書き換えてください
 
+set -euo pipefail
+
 PROJECT_ID="YOUR_PROJECT_ID"
 DATASET_ID="YOUR_DATASET_ID"
 SCHEMA_DIR="$(dirname "$0")"
