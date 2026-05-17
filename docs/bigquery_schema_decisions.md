@@ -46,11 +46,11 @@ TIMESTAMP型はBigQuery内部でUTCに変換して保存するため、「JST �
 
 ## Q5. price（価格）の数値型は何にするか？
 
-**決定: INTEGER型**
+**決定: raw_ticks は INTEGER型、features_1min の価格列は FLOAT64型**
 
-サンプルCSVを確認したところ、GMOコインのBTC/JPY価格は常に整数（例: `14305210.000`）であった。FLOAT型は浮動小数点の計算誤差が生じうるため、INTEGER型を採用して誤差をゼロにする。
+raw_ticks の price はGMOコインのBTC/JPY価格であり常に整数（例: `14305210`）のため INTEGER を採用。
 
-CSVの値はFLOAT形式で記録されているため、BigQuery保存時にPython側で `int(float(value))` と変換する。
+features_1min の open/high/low/close は将来ETH等の小数価格を持つ通貨にも対応できるよう FLOAT64 を採用。INTEGER と FLOAT64 はどちらも8バイトでストレージコストは同じ。BTC/JPY の価格は8桁程度であり FLOAT64 の有効桁数（約15桁）に十分収まるため精度上の問題はない。
 
 ---
 
@@ -70,7 +70,7 @@ CSVの値はFLOAT形式で記録されているため、BigQuery保存時にPyth
 | trade_logの更新方式 | UPDATE（1注文=1行） |
 | モデルバージョンの記録 | する（`model_version`列） |
 | タイムゾーン | JST統一 |
-| 価格の型 | INTEGER |
+| 価格の型 | raw_ticks: INTEGER、features_1min: FLOAT64 |
 | symbolの管理 | 全テーブルに列を持つ |
 
 ---

@@ -157,3 +157,27 @@ class TestStableSort:
         result = build_features(df)
         # 安定ソートなら行Aが先頭を維持 → open = 100.0
         assert result.iloc[0]["open"] == 100.0
+
+
+class TestSymbol:
+    def test_symbol_propagated(self, three_ticks_df):
+        result = build_features(three_ticks_df)
+        assert (result["symbol"] == "BTC").all()
+
+    def test_empty_df_returns_correct_columns(self):
+        from preprocess import FEATURES_COLUMNS
+        empty_df = pd.DataFrame(columns=["symbol", "side", "size", "price", "timestamp"])
+        result = build_features(empty_df)
+        assert list(result.columns) == FEATURES_COLUMNS
+        assert len(result) == 0
+
+    def test_multiple_symbols_raises(self):
+        df = pd.DataFrame({
+            "symbol": ["BTC", "ETH"],
+            "side":   ["BUY", "BUY"],
+            "size":   [0.001, 0.001],
+            "price":  [100.0, 200.0],
+            "timestamp": pd.to_datetime(["2025-11-30 21:00:01", "2025-11-30 21:00:02"]),
+        })
+        with pytest.raises(ValueError):
+            build_features(df)

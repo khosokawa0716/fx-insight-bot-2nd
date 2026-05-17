@@ -17,9 +17,14 @@ def load_ticks(filepath: str) -> pd.DataFrame:
     return df
 
 
+FEATURES_COLUMNS = ["minute", "open", "high", "low", "close", "volume", "vwap", "imbalance", "shannon_entropy", "symbol"]
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
-        return df
+        return pd.DataFrame(columns=FEATURES_COLUMNS)
+    if df["symbol"].nunique() != 1:
+        raise ValueError(f"build_features は単一 symbol のみ対応しています: {df['symbol'].unique()}")
     df = df.copy()
     # open/close の正確性を保証するため、同一 timestamp の元順序を保って並べる
     df = df.sort_values("timestamp", kind="mergesort")
