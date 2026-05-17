@@ -92,7 +92,7 @@ class TestImbalance:
 class TestEntropy:
     def test_entropy_3ticks(self, three_ticks_df):
         result = build_features(three_ticks_df)
-        assert result.iloc[0]["entropy"] == pytest.approx(1.2629, abs=0.001)
+        assert result.iloc[0]["shannon_entropy"] == pytest.approx(1.2629, abs=0.001)
 
     def test_entropy_single_tick(self):
         df = pd.DataFrame({
@@ -103,7 +103,7 @@ class TestEntropy:
             "timestamp": pd.to_datetime(["2025-11-30 21:00:00"]),
         })
         result = build_features(df)
-        assert result.iloc[0]["entropy"] == 0.0
+        assert result.iloc[0]["shannon_entropy"] == 0.0
 
     def test_entropy_uniform_size(self):
         n = 4
@@ -121,7 +121,7 @@ class TestEntropy:
         })
         result = build_features(df)
         # 均一分布の entropy = log2(n)
-        assert result.iloc[0]["entropy"] == pytest.approx(math.log2(n), abs=1e-6)
+        assert result.iloc[0]["shannon_entropy"] == pytest.approx(math.log2(n), abs=1e-6)
 
 
 class TestZeroSizeFilter:

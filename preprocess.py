@@ -49,7 +49,8 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     entropy = entropy_terms.groupby(valid_sizes["minute"]).sum()
     minute_counts = valid_sizes.groupby("minute")["size"].size()
     entropy = entropy.where(minute_counts >= 2, 0.0)
-    ohlcv["entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
+    ohlcv["shannon_entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
+    ohlcv["symbol"] = df["symbol"].iloc[0]
 
     return ohlcv.reset_index()
 
