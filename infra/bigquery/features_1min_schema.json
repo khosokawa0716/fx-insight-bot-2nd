@@ -1,11 +1,5 @@
 [
   {
-    "name": "symbol",
-    "type": "STRING",
-    "mode": "REQUIRED",
-    "description": "取引通貨シンボル（例: BTC）"
-  },
-  {
     "name": "minute",
     "type": "DATETIME",
     "mode": "REQUIRED",
@@ -58,5 +52,11 @@
     "type": "FLOAT64",
     "mode": "REQUIRED",
     "description": "約定数量ベースのシャノン・エントロピー。大口アルゴリズムの活動度を示す独自指標"
+  },
+  {
+    "name": "symbol",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "取引通貨シンボル（例: BTC）"
   }
 ]

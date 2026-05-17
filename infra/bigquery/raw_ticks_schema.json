@@ -21,7 +21,7 @@
     "name": "price",
     "type": "INTEGER",
     "mode": "REQUIRED",
-    "description": "約定価格（円単位、小数なし）"
+    "description": "約定価格（円単位）。CSVは小数点付き表記（例: 14305210.000）だがBigQueryのINTEGERとして正しくロードされる"
   },
   {
     "name": "timestamp",
