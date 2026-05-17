@@ -8,35 +8,45 @@ PROJECT_ID="YOUR_PROJECT_ID"
 DATASET_ID="YOUR_DATASET_ID"
 SCHEMA_DIR="$(dirname "$0")"
 
+create_table_if_not_exists() {
+  local table_id="$1"
+  local schema_file="$2"
+  shift 2
+
+  if bq show "${table_id}" >/dev/null 2>&1; then
+    echo "既存のためスキップ: ${table_id}"
+    return 0
+  fi
+
+  bq mk --table "$@" "${table_id}" "${schema_file}"
+}
+
 # raw_ticks: 生のTickデータ
 # パーティション: timestamp（日単位）
 # クラスタリング: symbol
-bq mk \
-  --table \
+create_table_if_not_exists \
+  "${PROJECT_ID}:${DATASET_ID}.raw_ticks" \
+  "${SCHEMA_DIR}/raw_ticks_schema.json" \
   --time_partitioning_field=timestamp \
   --time_partitioning_type=DAY \
-  --clustering_fields=symbol \
-  "${PROJECT_ID}:${DATASET_ID}.raw_ticks" \
-  "${SCHEMA_DIR}/raw_ticks_schema.json"
+  --clustering_fields=symbol
 
 # features_1min: 1分足OHLCV＋特徴量
 # パーティション: minute（日単位）
 # クラスタリング: symbol
-bq mk \
-  --table \
+create_table_if_not_exists \
+  "${PROJECT_ID}:${DATASET_ID}.features_1min" \
+  "${SCHEMA_DIR}/features_1min_schema.json" \
   --time_partitioning_field=minute \
   --time_partitioning_type=DAY \
-  --clustering_fields=symbol \
-  "${PROJECT_ID}:${DATASET_ID}.features_1min" \
-  "${SCHEMA_DIR}/features_1min_schema.json"
+  --clustering_fields=symbol
 
 # trade_log: 売買ログ
 # パーティション: signal_time（日単位）
-bq mk \
-  --table \
-  --time_partitioning_field=signal_time \
-  --time_partitioning_type=DAY \
+create_table_if_not_exists \
   "${PROJECT_ID}:${DATASET_ID}.trade_log" \
-  "${SCHEMA_DIR}/trade_log_schema.json"
+  "${SCHEMA_DIR}/trade_log_schema.json" \
+  --time_partitioning_field=signal_time \
+  --time_partitioning_type=DAY
 
 echo "テーブル作成完了"
