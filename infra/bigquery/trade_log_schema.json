@@ -43,7 +43,7 @@
   },
   {
     "name": "entry_price",
-    "type": "INTEGER",
+    "type": "FLOAT64",
     "mode": "NULLABLE",
     "description": "エントリー価格（円）。約定後に確定"
   },
@@ -61,7 +61,7 @@
   },
   {
     "name": "exit_price",
-    "type": "INTEGER",
+    "type": "FLOAT64",
     "mode": "NULLABLE",
     "description": "決済価格（円）。未決済中はNULL"
   },
