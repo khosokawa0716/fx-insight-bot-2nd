@@ -23,6 +23,8 @@ FEATURES_COLUMNS = ["minute", "open", "high", "low", "close", "volume", "vwap", 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=FEATURES_COLUMNS)
+    if df["symbol"].isna().any():
+        raise ValueError("symbol 列に欠損値が含まれています")
     if df["symbol"].nunique() != 1:
         raise ValueError(f"build_features は単一 symbol のみ対応しています: {df['symbol'].unique()}")
     df = df.copy()

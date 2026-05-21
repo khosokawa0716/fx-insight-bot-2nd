@@ -181,3 +181,18 @@ class TestSymbol:
         })
         with pytest.raises(ValueError):
             build_features(df)
+
+    def test_symbol_nan_raises(self):
+        df = pd.DataFrame({
+            "symbol": [None, "BTC", "BTC"],
+            "side":   ["BUY", "BUY", "SELL"],
+            "size":   [0.001, 0.001, 0.001],
+            "price":  [100.0, 100.0, 100.0],
+            "timestamp": pd.to_datetime([
+                "2025-11-30 21:00:01",
+                "2025-11-30 21:00:02",
+                "2025-11-30 21:00:03",
+            ]),
+        })
+        with pytest.raises(ValueError, match="欠損値"):
+            build_features(df)
