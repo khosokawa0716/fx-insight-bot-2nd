@@ -1,0 +1,32 @@
+[
+  {
+    "name": "symbol",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "取引通貨シンボル（例: BTC）"
+  },
+  {
+    "name": "side",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "売買区分（BUY / SELL）"
+  },
+  {
+    "name": "size",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "約定数量（BTC単位、小数あり）"
+  },
+  {
+    "name": "price",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "約定価格（円単位）。CSVの小数点付き表記（例: 14305210.000）をそのままBigQueryにロードできるようFLOAT64で保持する"
+  },
+  {
+    "name": "timestamp",
+    "type": "DATETIME",
+    "mode": "REQUIRED",
+    "description": "約定日時（JST）"
+  }
+]

@@ -17,7 +17,16 @@ def load_ticks(filepath: str) -> pd.DataFrame:
     return df
 
 
+FEATURES_COLUMNS = ["minute", "open", "high", "low", "close", "volume", "vwap", "imbalance", "shannon_entropy", "symbol"]
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return pd.DataFrame(columns=FEATURES_COLUMNS)
+    if df["symbol"].isna().any():
+        raise ValueError("symbol 列に欠損値が含まれています")
+    if df["symbol"].nunique() != 1:
+        raise ValueError(f"build_features は単一 symbol のみ対応しています: {df['symbol'].unique()}")
     df = df.copy()
     # open/close の正確性を保証するため、同一 timestamp の元順序を保って並べる
     df = df.sort_values("timestamp", kind="mergesort")
@@ -49,7 +58,8 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     entropy = entropy_terms.groupby(valid_sizes["minute"]).sum()
     minute_counts = valid_sizes.groupby("minute")["size"].size()
     entropy = entropy.where(minute_counts >= 2, 0.0)
-    ohlcv["entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
+    ohlcv["shannon_entropy"] = entropy.reindex(ohlcv.index).fillna(0.0)
+    ohlcv["symbol"] = df["symbol"].iloc[0]
 
     return ohlcv.reset_index()
 

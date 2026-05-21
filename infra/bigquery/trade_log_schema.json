@@ -1,0 +1,74 @@
+[
+  {
+    "name": "trade_id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "GMOコインの注文ID"
+  },
+  {
+    "name": "symbol",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "取引通貨シンボル（例: BTC）"
+  },
+  {
+    "name": "signal_time",
+    "type": "DATETIME",
+    "mode": "REQUIRED",
+    "description": "1次シグナル発生時刻（JST）。パーティションキー"
+  },
+  {
+    "name": "signal_type",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "シグナル方向（BUY / SELL）"
+  },
+  {
+    "name": "lot_size",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "発注ロットサイズ（0 / 500 / 1000 / 1500）。0は見送り"
+  },
+  {
+    "name": "predicted_prob",
+    "type": "FLOAT64",
+    "mode": "REQUIRED",
+    "description": "AIが予測した勝率（0.0〜1.0）"
+  },
+  {
+    "name": "model_version",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "推論に使用したモデルのバージョン（例: v1）"
+  },
+  {
+    "name": "entry_price",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "エントリー価格（円）。約定後に確定"
+  },
+  {
+    "name": "result",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "決済結果（TP / SL）。未決済中はNULL"
+  },
+  {
+    "name": "exit_time",
+    "type": "DATETIME",
+    "mode": "NULLABLE",
+    "description": "決済時刻（JST）。未決済中はNULL"
+  },
+  {
+    "name": "exit_price",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "決済価格（円）。未決済中はNULL"
+  },
+  {
+    "name": "pnl_jpy",
+    "type": "FLOAT64",
+    "mode": "NULLABLE",
+    "description": "損益（円）。未決済中はNULL"
+  }
+]
