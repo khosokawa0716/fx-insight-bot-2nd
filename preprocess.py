@@ -73,7 +73,14 @@ def main():
     input_file = Path(args.input)
     if not input_file.exists():
         parser.error(f"ファイルが見つかりません: {input_file}")
-    output_path = Path(args.output) if args.output else input_file.with_name(f"{input_file.stem}_features.csv")
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        date_str = input_file.stem.split("_")[0]  # "20181001"
+        year, month = date_str[:4], date_str[4:6]
+        output_dir = Path("output/features_1min") / year / month
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{input_file.stem}_features.csv"
 
     ticks = load_ticks(str(input_file))
     print(f"Loaded {len(ticks):,} ticks from {input_file}")
