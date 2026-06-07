@@ -189,6 +189,15 @@ def call_private_get(path: str, params: dict | None = None) -> dict:
     return {"status_code": resp.status_code, "body": resp.json()}
 
 
+def call_private_post(path: str, body: dict) -> dict:
+    """POST リクエスト。署名にボディ文字列を含める（GET とは異なる）。"""
+    url = BASE_URL + "/private" + path
+    body_str = json.dumps(body)
+    headers = _auth_headers("POST", path, body_str)
+    resp = requests.post(url, headers=headers, data=body_str, timeout=10)
+    return {"status_code": resp.status_code, "body": resp.json()}
+
+
 # ── 定義書の生成 ──────────────────────────────────────────────────────────────
 
 def _format_endpoint_spec(ep: dict, result: dict, now: str) -> str:

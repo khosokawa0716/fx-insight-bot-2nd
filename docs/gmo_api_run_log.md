@@ -54,3 +54,18 @@
 
 ---
 
+
+## 注文フローテスト 案B-1 (2026-06-07 11:15 UTC)
+
+現在値: 10,021,421円 / SL(-15%): 8,518,207円
+
+- ✅ Step 1: MARKET BUY — orderId=8548896377
+- ✅ Step 2: positionId=286270944 建値=10015197円
+- ✅ Step 3: STOP SELL (SL) — orderId=8548896382 @ 8,518,207円
+- ✅ Step 4: SL注文 確認済み (status=WAITING)
+- ✅ Step 5a: cancelOrder SL(8548896382) 完了
+- ✅ Step 5b: closeBulkOrder MARKET SELL — orderId=8548896383
+- ✅ Step 6: ポジション完全クローズ確認
+
+---
+
