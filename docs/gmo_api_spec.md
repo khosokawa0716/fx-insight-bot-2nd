@@ -1,6 +1,6 @@
 # GMOコイン API 定義書
 
-> 最終更新: 2026-06-07 10:26 UTC（`scripts/gmo_api_check.py` による自動生成）
+> 最終更新: 2026-06-07 10:35 UTC（`scripts/gmo_api_check.py` による自動生成）
 
 ---
 
@@ -9,6 +9,9 @@
 - [GET /public/v1/ticker — 現在値取得](#get-publicv1ticker--現在値取得)
 - [GET /private/v1/account/assets — 資産残高取得](#get-privatev1accountassets--資産残高取得)
 - [GET /private/v1/account/margin — 証拠金サマリー取得](#get-privatev1accountmargin--証拠金サマリー取得)
+- [GET /private/v1/activeOrders — 注文一覧取得](#get-privatev1activeOrders--注文一覧取得)
+- [GET /private/v1/openPositions — 建玉一覧取得](#get-privatev1openPositions--建玉一覧取得)
+- [GET /private/v1/positionSummary — 建玉サマリー取得](#get-privatev1positionSummary--建玉サマリー取得)
 
 ---
 
@@ -17,7 +20,7 @@
 |---|---|
 | 認証 | 不要 |
 | 説明 | 指定銘柄の現在値（Bid/Ask/High/Low/Last/Volume）を返す。 |
-| 最終確認 | 2026-06-07 10:26 UTC ✅ 成功 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
 
 ### リクエストパラメータ
 
@@ -45,17 +48,17 @@
   "status": 0,
   "data": [
     {
-      "ask": "10040569",
-      "bid": "10034395",
+      "ask": "10027250",
+      "bid": "10025818",
       "high": "10100160",
-      "last": "10035698",
+      "last": "10026799",
       "low": "9701000",
       "symbol": "BTC",
-      "timestamp": "2026-06-07T10:26:01.428Z",
-      "volume": "181.86402"
+      "timestamp": "2026-06-07T10:35:30.165Z",
+      "volume": "179.63704"
     }
   ],
-  "responsetime": "2026-06-07T10:26:01.950Z"
+  "responsetime": "2026-06-07T10:35:30.974Z"
 }
 ```
 
@@ -66,7 +69,7 @@
 |---|---|
 | 認証 | 必要（API-KEY / API-SIGN） |
 | 説明 | 保有している全銘柄の残高と、JPY換算レートを返す。 |
-| 最終確認 | 2026-06-07 10:26 UTC ✅ 成功 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
 
 ### レスポンスフィールド
 
@@ -92,37 +95,37 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "9785600",
+      "conversionRate": "9778990",
       "symbol": "BTC"
     },
     {
       "amount": "0.00018879",
       "available": "0.00018879",
-      "conversionRate": "255549",
+      "conversionRate": "255551",
       "symbol": "ETH"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "35259",
+      "conversionRate": "35249",
       "symbol": "BCH"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "6618",
+      "conversionRate": "6631",
       "symbol": "LTC"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "178.567",
+      "conversionRate": "178.157",
       "symbol": "XRP"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "31.962",
+      "conversionRate": "31.886",
       "symbol": "XLM"
     },
     {
@@ -134,7 +137,7 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "37.598",
+      "conversionRate": "37.538",
       "symbol": "XTZ"
     },
     {
@@ -164,25 +167,25 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "25.535",
+      "conversionRate": "25.47",
       "symbol": "ADA"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "1198",
+      "conversionRate": "1195",
       "symbol": "LINK"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "13.052",
+      "conversionRate": "13.033",
       "symbol": "DOGE"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "10042",
+      "conversionRate": "10038",
       "symbol": "SOL"
     },
     {
@@ -200,19 +203,19 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "116.114",
+      "conversionRate": "116.122",
       "symbol": "FIL"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "8.036",
+      "conversionRate": "8.034",
       "symbol": "SAND"
     },
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "3.859",
+      "conversionRate": "3.848",
       "symbol": "CHZ"
     },
     {
@@ -224,7 +227,7 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "1044",
+      "conversionRate": "1043",
       "symbol": "AVAX"
     },
     {
@@ -236,7 +239,7 @@
     {
       "amount": "0",
       "available": "0",
-      "conversionRate": "115.853",
+      "conversionRate": "115.829",
       "symbol": "SUI"
     },
     {
@@ -258,7 +261,7 @@
       "symbol": "ZPGPT"
     }
   ],
-  "responsetime": "2026-06-07T10:26:02.613Z"
+  "responsetime": "2026-06-07T10:35:31.630Z"
 }
 ```
 
@@ -269,7 +272,7 @@
 |---|---|
 | 認証 | 必要（API-KEY / API-SIGN） |
 | 説明 | 暗号資産FX口座の証拠金・評価損益・証拠金維持率ステータスを返す。 |
-| 最終確認 | 2026-06-07 10:26 UTC ✅ 成功 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
 
 ### レスポンスフィールド
 
@@ -295,7 +298,130 @@
     "profitLoss": "0",
     "transferableAmount": "2900"
   },
-  "responsetime": "2026-06-07T10:26:02.711Z"
+  "responsetime": "2026-06-07T10:35:31.724Z"
+}
+```
+
+---
+
+## GET /private/v1/activeOrders — 注文一覧取得
+| 項目 | 値 |
+|---|---|
+| 認証 | 必要（API-KEY / API-SIGN） |
+| 説明 | 未約定・部分約定のオープン注文一覧を返す。 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
+
+### リクエストパラメータ
+
+| パラメータ | 必須 | 型 | 説明 |
+|---|---|---|---|
+| `symbol` | ○ | string | 銘柄コード（例: `BTC_JPY`） |
+| `page` | − | number | ページ番号（デフォルト: 1） |
+| `count` | − | number | 取得件数（デフォルト: 100） |
+
+### レスポンスフィールド
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `orderId` | number | 注文ID |
+| `symbol` | string | 銘柄コード |
+| `side` | string | 売買区分（BUY / SELL） |
+| `executionType` | string | 注文タイプ（MARKET / LIMIT / STOP） |
+| `price` | string | 注文価格（MARKET の場合は空） |
+| `losscutPrice` | string | ロスカット価格（レバレッジのみ） |
+| `size` | string | 注文数量（BTC） |
+| `executedSize` | string | 約定済み数量（BTC） |
+| `status` | string | 注文ステータス（WAITING / ORDERED / MODIFYING / CANCELLING） |
+| `timeInForce` | string | 執行条件（FAK / FAS / FOK） |
+| `timestamp` | string | 注文受付時刻（ISO 8601） |
+
+### レスポンス例
+
+```json
+{
+  "status": 0,
+  "data": {},
+  "responsetime": "2026-06-07T10:35:31.826Z"
+}
+```
+
+---
+
+## GET /private/v1/openPositions — 建玉一覧取得
+| 項目 | 値 |
+|---|---|
+| 認証 | 必要（API-KEY / API-SIGN） |
+| 説明 | 保有中の建玉（ポジション）一覧を返す。 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
+
+### リクエストパラメータ
+
+| パラメータ | 必須 | 型 | 説明 |
+|---|---|---|---|
+| `symbol` | ○ | string | 銘柄コード（例: `BTC_JPY`） |
+| `page` | − | number | ページ番号（デフォルト: 1） |
+| `count` | − | number | 取得件数（デフォルト: 100） |
+
+### レスポンスフィールド
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `positionId` | number | 建玉ID |
+| `symbol` | string | 銘柄コード |
+| `side` | string | 売買区分（BUY / SELL） |
+| `size` | string | 建玉数量（BTC） |
+| `orderedSize` | string | 発注中数量（BTC） |
+| `price` | string | 建値（円） |
+| `lossGain` | string | 評価損益（円） |
+| `leverage` | string | レバレッジ倍率 |
+| `losscutPrice` | string | ロスカット価格（円） |
+| `timestamp` | string | 建玉作成時刻（ISO 8601） |
+
+### レスポンス例
+
+```json
+{
+  "status": 0,
+  "data": {},
+  "responsetime": "2026-06-07T10:35:31.919Z"
+}
+```
+
+---
+
+## GET /private/v1/positionSummary — 建玉サマリー取得
+| 項目 | 値 |
+|---|---|
+| 認証 | 必要（API-KEY / API-SIGN） |
+| 説明 | 銘柄ごとの建玉合計（ネットポジション）を返す。 |
+| 最終確認 | 2026-06-07 10:35 UTC ✅ 成功 |
+
+### リクエストパラメータ
+
+| パラメータ | 必須 | 型 | 説明 |
+|---|---|---|---|
+| `symbol` | − | string | 銘柄コード（省略時は全銘柄） |
+
+### レスポンスフィールド
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `symbol` | string | 銘柄コード |
+| `side` | string | 売買区分（BUY / SELL） |
+| `averagePrice` | string | 平均建値（円） |
+| `positionSize` | string | 建玉合計数量（BTC） |
+| `orderedSize` | string | 発注中数量（BTC） |
+| `lossGain` | string | 評価損益（円） |
+
+### レスポンス例
+
+```json
+{
+  "status": 0,
+  "data": {
+    "list": []
+  },
+  "responsetime": "2026-06-07T10:35:32.018Z"
 }
 ```
 

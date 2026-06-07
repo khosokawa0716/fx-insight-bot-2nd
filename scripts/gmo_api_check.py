@@ -70,6 +70,7 @@ ENDPOINTS: list[dict[str, Any]] = [
     },
     {
         "title": "証拠金サマリー取得",
+
         "method": "GET",
         "path": "/private/v1/account/margin",
         "auth": True,
@@ -84,6 +85,76 @@ ENDPOINTS: list[dict[str, Any]] = [
             {"name": "transferableAmount","type": "string", "desc": "出金可能額（円）"},
         ],
         "call": lambda: call_private_get("/v1/account/margin"),
+    },
+    {
+        "title": "注文一覧取得",
+        "method": "GET",
+        "path": "/private/v1/activeOrders",
+        "auth": True,
+        "description": "未約定・部分約定のオープン注文一覧を返す。",
+        "params": [
+            {"name": "symbol",  "required": True,  "type": "string", "desc": "銘柄コード（例: `BTC_JPY`）"},
+            {"name": "page",    "required": False, "type": "number", "desc": "ページ番号（デフォルト: 1）"},
+            {"name": "count",   "required": False, "type": "number", "desc": "取得件数（デフォルト: 100）"},
+        ],
+        "response_fields": [
+            {"name": "orderId",       "type": "number", "desc": "注文ID"},
+            {"name": "symbol",        "type": "string", "desc": "銘柄コード"},
+            {"name": "side",          "type": "string", "desc": "売買区分（BUY / SELL）"},
+            {"name": "executionType", "type": "string", "desc": "注文タイプ（MARKET / LIMIT / STOP）"},
+            {"name": "price",         "type": "string", "desc": "注文価格（MARKET の場合は空）"},
+            {"name": "losscutPrice",  "type": "string", "desc": "ロスカット価格（レバレッジのみ）"},
+            {"name": "size",          "type": "string", "desc": "注文数量（BTC）"},
+            {"name": "executedSize",  "type": "string", "desc": "約定済み数量（BTC）"},
+            {"name": "status",        "type": "string", "desc": "注文ステータス（WAITING / ORDERED / MODIFYING / CANCELLING）"},
+            {"name": "timeInForce",   "type": "string", "desc": "執行条件（FAK / FAS / FOK）"},
+            {"name": "timestamp",     "type": "string", "desc": "注文受付時刻（ISO 8601）"},
+        ],
+        "call": lambda: call_private_get("/v1/activeOrders", {"symbol": "BTC_JPY"}),
+    },
+    {
+        "title": "建玉一覧取得",
+        "method": "GET",
+        "path": "/private/v1/openPositions",
+        "auth": True,
+        "description": "保有中の建玉（ポジション）一覧を返す。",
+        "params": [
+            {"name": "symbol", "required": True,  "type": "string", "desc": "銘柄コード（例: `BTC_JPY`）"},
+            {"name": "page",   "required": False, "type": "number", "desc": "ページ番号（デフォルト: 1）"},
+            {"name": "count",  "required": False, "type": "number", "desc": "取得件数（デフォルト: 100）"},
+        ],
+        "response_fields": [
+            {"name": "positionId",   "type": "number", "desc": "建玉ID"},
+            {"name": "symbol",       "type": "string", "desc": "銘柄コード"},
+            {"name": "side",         "type": "string", "desc": "売買区分（BUY / SELL）"},
+            {"name": "size",         "type": "string", "desc": "建玉数量（BTC）"},
+            {"name": "orderedSize",  "type": "string", "desc": "発注中数量（BTC）"},
+            {"name": "price",        "type": "string", "desc": "建値（円）"},
+            {"name": "lossGain",     "type": "string", "desc": "評価損益（円）"},
+            {"name": "leverage",     "type": "string", "desc": "レバレッジ倍率"},
+            {"name": "losscutPrice", "type": "string", "desc": "ロスカット価格（円）"},
+            {"name": "timestamp",    "type": "string", "desc": "建玉作成時刻（ISO 8601）"},
+        ],
+        "call": lambda: call_private_get("/v1/openPositions", {"symbol": "BTC_JPY"}),
+    },
+    {
+        "title": "建玉サマリー取得",
+        "method": "GET",
+        "path": "/private/v1/positionSummary",
+        "auth": True,
+        "description": "銘柄ごとの建玉合計（ネットポジション）を返す。",
+        "params": [
+            {"name": "symbol", "required": False, "type": "string", "desc": "銘柄コード（省略時は全銘柄）"},
+        ],
+        "response_fields": [
+            {"name": "symbol",       "type": "string", "desc": "銘柄コード"},
+            {"name": "side",         "type": "string", "desc": "売買区分（BUY / SELL）"},
+            {"name": "averagePrice", "type": "string", "desc": "平均建値（円）"},
+            {"name": "positionSize", "type": "string", "desc": "建玉合計数量（BTC）"},
+            {"name": "orderedSize",  "type": "string", "desc": "発注中数量（BTC）"},
+            {"name": "lossGain",     "type": "string", "desc": "評価損益（円）"},
+        ],
+        "call": lambda: call_private_get("/v1/positionSummary", {"symbol": "BTC_JPY"}),
     },
 ]
 
@@ -110,10 +181,11 @@ def call_public(path: str) -> dict:
     return {"status_code": resp.status_code, "body": resp.json()}
 
 
-def call_private_get(path: str) -> dict:
+def call_private_get(path: str, params: dict | None = None) -> dict:
+    """path はクエリパラメータなしの /v1/... 形式で渡す。クエリは params で別渡し。"""
     url = BASE_URL + "/private" + path
     headers = _auth_headers("GET", path)
-    resp = requests.get(url, headers=headers, timeout=10)
+    resp = requests.get(url, headers=headers, params=params, timeout=10)
     return {"status_code": resp.status_code, "body": resp.json()}
 
 

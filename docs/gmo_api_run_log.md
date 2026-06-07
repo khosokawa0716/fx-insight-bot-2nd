@@ -15,3 +15,42 @@
 
 ---
 
+## 実行: 2026-06-07 10:28 UTC
+
+- ✅ `GET /public/v1/ticker` (HTTP 200)
+- ✅ `GET /private/v1/account/assets` (HTTP 200)
+- ✅ `GET /private/v1/account/margin` (HTTP 200)
+- ❌ `GET /private/v1/activeOrders` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+- ❌ `GET /private/v1/openPositions` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+- ❌ `GET /private/v1/positionSummary` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+
+---
+
+## 実行: 2026-06-07 10:29 UTC
+
+- ✅ `GET /public/v1/ticker` (HTTP 200)
+- ✅ `GET /private/v1/account/assets` (HTTP 200)
+- ✅ `GET /private/v1/account/margin` (HTTP 200)
+- ❌ `GET /private/v1/activeOrders` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+- ❌ `GET /private/v1/openPositions` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+- ❌ `GET /private/v1/positionSummary` (HTTP 200)
+  - `ERR-5010`: Signature for this request is not valid.
+
+---
+
+## 実行: 2026-06-07 10:35 UTC
+
+- ✅ `GET /public/v1/ticker` (HTTP 200)
+- ✅ `GET /private/v1/account/assets` (HTTP 200)
+- ✅ `GET /private/v1/account/margin` (HTTP 200)
+- ✅ `GET /private/v1/activeOrders` (HTTP 200)
+- ✅ `GET /private/v1/openPositions` (HTTP 200)
+- ✅ `GET /private/v1/positionSummary` (HTTP 200)
+
+---
+
