@@ -56,6 +56,9 @@ AIが勝率を予測するための「相場のヒント」として、Tickデ�
 - [x] **【意思決定】TP/SL の実現方式を決定する → 案B-1 に確定**
 - [x] Private API で余力情報取得など小さい操作で動作確認
 - [x] 注文フローテスト完了（MARKET BUY → STOP SL立て置き → SLキャンセル → 成行決済）
+- [x] WebSocket 疎通確認（Public: ticker で BTC/JPY リアルタイム価格受信 / Private: executionEvents を subscribe）
+  - TP監視方式確定: bid を監視 → bid >= TP価格 で cancelOrder(SL) → closeBulkOrder(MARKET)
+  - SL約定検知: Private WebSocket の executionEvents で STOP 約定を受信 → TP監視スレッドを終了
 
 ## Phase 2: メタラベリングとバックテスト（Python/ローカル検証）
 > バックテスト結果を見ながら以下を同時に意思決定する：取引頻度・最大ロット・10万円で足りるか
