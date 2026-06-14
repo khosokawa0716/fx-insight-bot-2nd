@@ -203,37 +203,29 @@ def calc_stats(df: pd.DataFrame, signal_name: str) -> dict:
 
 
 def plot_log():
-    """docs/backtest_log.md の試行履歴テーブルを読み込んでグラフを出力する"""
+    """試行履歴を月ごとにグループ化した棒グラフを出力する"""
     import matplotlib.pyplot as plt
     import matplotlib
+    import numpy as np
     matplotlib.use("Agg")
 
     log_path = os.path.join("docs", "backtest_log.md")
     with open(log_path, encoding="utf-8") as f:
         content = f.read()
 
-    # テーブル行をパース。列数8（ベースライン）と9（試行履歴）の両方に対応
-    # 8列: # | 日付 | 期間 | シグナル | 勝率 | PF | 取引回数 | メモ
+    # 試行履歴のみパース（9列）
     # 9列: # | 日付 | 期間 | シグナル | 条件 | 勝率 | PF | 取引回数 | 考察
     rows = []
     for line in content.splitlines():
         cells = [c.strip() for c in line.split("|") if c.strip()]
-        if len(cells) < 8:
+        if len(cells) != 9:
             continue
         try:
-            num = cells[0]
             period = cells[2]
             signal = cells[3]
-            if len(cells) == 8:   # ベースライン（条件列なし）
-                win_rate = float(cells[4].replace("%", ""))
-                pf = float(cells[5])
-                trades = int(cells[6].replace(",", ""))
-            else:                  # 試行履歴（条件列あり）
-                win_rate = float(cells[5].replace("%", ""))
-                pf = float(cells[6])
-                trades = int(cells[7].replace(",", ""))
-            label_ascii = f"#{num}\n{period}"
-            rows.append({"label": label_ascii, "signal": signal, "win_rate": win_rate, "pf": pf, "trades": trades})
+            win_rate = float(cells[5].replace("%", ""))
+            pf = float(cells[6])
+            rows.append({"period": period, "signal": signal, "win_rate": win_rate, "pf": pf})
         except (ValueError, IndexError):
             continue
 
@@ -241,42 +233,62 @@ def plot_log():
         print("グラフ化できる試行データが見つかりませんでした")
         return
 
-    labels = [r["label"] for r in rows]
-    win_rates = [r["win_rate"] for r in rows]
-    pfs = [r["pf"] for r in rows]
-    trades = [r["trades"] for r in rows]
-    x = range(len(rows))
+    # 月・シグナルの一覧を抽出（出現順を保持）
+    periods = list(dict.fromkeys(r["period"] for r in rows))
+    signals = list(dict.fromkeys(r["signal"] for r in rows))
+    # 凡例用ラベル（フォント非対応の日本語を除去してASCII部分のみ使う）
+    signal_labels = {s: re.sub(r'[^\x00-\x7F]+', '', s).strip() or s for s in signals}
+    colors = ["#3498db", "#2ecc71", "#e67e22", "#9b59b6"]
+    signal_colors = {s: colors[i % len(colors)] for i, s in enumerate(signals)}
 
-    fig, axes = plt.subplots(3, 1, figsize=(max(8, len(rows) * 1.5), 10))
-    fig.suptitle("Backtest Comparison", fontsize=13)
+    # 月ごと×シグナルごとに値を整理
+    data = {s: {"win_rate": [], "pf": []} for s in signals}
+    for period in periods:
+        for sig in signals:
+            match = next((r for r in rows if r["period"] == period and r["signal"] == sig), None)
+            data[sig]["win_rate"].append(match["win_rate"] if match else None)
+            data[sig]["pf"].append(match["pf"] if match else None)
 
-    # Win Rate
-    bars = axes[0].bar(x, win_rates, color=["#e74c3c" if w < 50 else "#2ecc71" for w in win_rates])
+    n_periods = len(periods)
+    n_signals = len(signals)
+    bar_w = 0.8 / n_signals
+    x = np.arange(n_periods)
+
+    fig, axes = plt.subplots(2, 1, figsize=(max(8, n_periods * 2.5), 8))
+    fig.suptitle("Backtest Comparison by Month", fontsize=13)
+
+    for i, sig in enumerate(signals):
+        offset = (i - n_signals / 2 + 0.5) * bar_w
+        # Win Rate
+        vals = data[sig]["win_rate"]
+        bars = axes[0].bar(x + offset, vals, width=bar_w, label=signal_labels[sig],
+                           color=signal_colors[sig], alpha=0.85)
+        for bar, val in zip(bars, vals):
+            if val is not None:
+                axes[0].text(bar.get_x() + bar.get_width() / 2,
+                             bar.get_height() + 0.1, f"{val:.1f}%",
+                             ha="center", fontsize=7, rotation=90)
+        # PF
+        vals = data[sig]["pf"]
+        bars = axes[1].bar(x + offset, vals, width=bar_w, label=signal_labels[sig],
+                           color=signal_colors[sig], alpha=0.85)
+        for bar, val in zip(bars, vals):
+            if val is not None:
+                axes[1].text(bar.get_x() + bar.get_width() / 2,
+                             bar.get_height() + 0.005, f"{val:.3f}",
+                             ha="center", fontsize=7, rotation=90)
+
     axes[0].axhline(50, color="gray", linestyle="--", linewidth=0.8, label="50% line")
     axes[0].set_ylabel("Win Rate (%)")
     axes[0].set_xticks(x)
-    axes[0].set_xticklabels(labels, fontsize=8)
+    axes[0].set_xticklabels(periods)
     axes[0].legend(fontsize=8)
-    for bar, val in zip(bars, win_rates):
-        axes[0].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.1, f"{val:.1f}%", ha="center", fontsize=8)
 
-    # PF
-    bars = axes[1].bar(x, pfs, color=["#e74c3c" if p < 1.0 else "#2ecc71" for p in pfs])
-    axes[1].axhline(1.0, color="gray", linestyle="--", linewidth=0.8, label="PF=1.0 line")
+    axes[1].axhline(1.0, color="gray", linestyle="--", linewidth=0.8, label="PF=1.0")
     axes[1].set_ylabel("PF")
     axes[1].set_xticks(x)
-    axes[1].set_xticklabels(labels, fontsize=8)
+    axes[1].set_xticklabels(periods)
     axes[1].legend(fontsize=8)
-    for bar, val in zip(bars, pfs):
-        axes[1].text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005, f"{val:.3f}", ha="center", fontsize=8)
-
-    # Trades
-    axes[2].bar(x, trades, color="#3498db")
-    axes[2].set_ylabel("Trades")
-    axes[2].set_xticks(x)
-    axes[2].set_xticklabels(labels, fontsize=8)
-    for i, val in enumerate(trades):
-        axes[2].text(i, val + 50, f"{val:,}", ha="center", fontsize=8)
 
     plt.tight_layout()
     out_path = os.path.join("output", "backtest_chart.png")
