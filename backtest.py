@@ -21,6 +21,7 @@ import argparse
 import glob
 import os
 import re
+import sys
 
 import pandas as pd
 
@@ -283,6 +284,21 @@ def plot_log():
     print(f"グラフを保存しました: {out_path}")
 
 
+class _Tee:
+    """stdout に書きながら同時にファイルにも書き出すラッパー"""
+    def __init__(self, file):
+        self._file = file
+        self._stdout = sys.stdout
+
+    def write(self, data):
+        self._stdout.write(data)
+        self._file.write(data)
+
+    def flush(self):
+        self._stdout.flush()
+        self._file.flush()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--year", type=int)
@@ -299,10 +315,25 @@ def main():
     if not args.year or not args.month:
         parser.error("--plot 以外では --year と --month が必要です")
 
-    df = load_month(args.year, args.month)
-    df = SIGNAL_FUNCS[args.signal](df, args.verbose)
-    df = judge_tp_sl(df)
-    calc_stats(df, args.signal)
+    tee = None
+    log_path = None
+    if args.verbose:
+        log_dir = os.path.join("output", "logs")
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, f"{args.year}_{args.month:02d}_{args.signal}.txt")
+        tee = _Tee(open(log_path, "w", encoding="utf-8"))
+        sys.stdout = tee
+
+    try:
+        df = load_month(args.year, args.month)
+        df = SIGNAL_FUNCS[args.signal](df, args.verbose)
+        df = judge_tp_sl(df)
+        calc_stats(df, args.signal)
+    finally:
+        if tee:
+            sys.stdout = tee._stdout
+            tee._file.close()
+            print(f"verboseログを保存しました: {log_path}")
 
 
 if __name__ == "__main__":
